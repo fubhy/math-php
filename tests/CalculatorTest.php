@@ -41,10 +41,8 @@ class CalculatorTest extends \PHPUnit_Framework_TestCase
      *
      * @param string $expression
      *     A mathematical expression.
-     *
      * @param mixed $expected
      *     The expected result.
-     *
      * @param array $variables
      *     An optional array of variables.
      *

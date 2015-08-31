@@ -20,23 +20,7 @@ use Fubhy\Math\Calculator;
  */
 class CalculatorTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * The parser.
-     *
-     * @var \Fubhy\Math\Calculator.
-     */
-    protected $calculator;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp()
-    {
-        parent::setUp();
-
-    }
-
-    /**
+     /**
      * Tests that mathematical expressions are properly calculated.
      *
      * @param string $expression

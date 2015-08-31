@@ -36,7 +36,7 @@ class CalculatorTest extends \PHPUnit_Framework_TestCase
     public function testCalculate($expression, $expected, array $variables = [])
     {
         $actual = (new Calculator())->calculate($expression, $variables);
-        $this->assertSame($expected, $actual, sprintf('Expression "%s" evaluated to %s. Expected %s.', $expression, $actual, $expected));
+        $this->assertSame(0, bccomp($expected, $actual), sprintf('Expression "%s" evaluated to %s. Expected %s.', $expression, $actual, $expected));
     }
 
     /**
@@ -49,8 +49,8 @@ class CalculatorTest extends \PHPUnit_Framework_TestCase
             ['7/6', 1.1666666666667],
             ['3^5 * 5 * $pi', 3817.0350741116],
             ['(3^2) * -2 + [foo]', -13, ['foo' => 5]],
-            ['abs(-5)', 5],
-            ['atan2(4, -3)', 2.2142974355882],
+            ['signum(-5)', -1],
+            ['sqrt(5)', 2.2360679774],
             // Example expression from Wikipedia.
             // @see http://en.wikipedia.org/wiki/Shunting-yard_algorithm
             ['3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3', 3.0001220703125],

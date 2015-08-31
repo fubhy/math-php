@@ -17,6 +17,7 @@ use Fubhy\Math\Token\FunctionToken;
 use Fubhy\Math\Token\NumberToken;
 use Fubhy\Math\Token\Operator\OperatorTokenInterface;
 use Fubhy\Math\Token\VariableToken;
+use Moontoast\Math\BigNumber;
 
 /**
  * Parser for mathematical expressions.
@@ -132,34 +133,40 @@ class Calculator
      */
     public static function getDefaultFunctions() {
         return [
-            ['abs', 'abs', 1],
-            ['acos', 'acos', 1],
-            ['acosh', 'acosh', 1],
-            ['asin', 'asin', 1],
-            ['asinh', 'asinh', 1],
-            ['atan2', 'atan2', 2],
-            ['atan', 'atan', 1],
-            ['atanh', 'atanh', 1],
-            ['ceil', 'ceil', 1],
-            ['cos', 'cos', 1],
-            ['cosh', 'cosh', 1],
-            ['deg2rad', 'deg2rad', 1],
-            ['exp', 'exp', 1],
-            ['floor', 'floor', 1],
-            ['hypot', 'hypot', 2],
-            ['log10', 'log10', 1],
-            ['log', 'log', 2],
-            ['max', 'max', 2],
-            ['min', 'min', 2],
-            ['pow', 'pow', 2],
-            ['rad2deg', 'rad2deg', 1],
-            ['rand', 'rand', 2],
-            ['round', 'round', 1],
-            ['sin', 'sin', 1],
-            ['sinh', 'sinh', 1],
-            ['sqrt', 'sqrt', 1],
-            ['tan', 'tan', 1],
-            ['tanh', 'tanh', 1],
+            ['abs', function ($number) {
+                return (new BigNumber($number))
+                    ->abs()
+                    ->getValue();
+            }, 1],
+            ['ceil', function ($number) {
+                return (new BigNumber($number))
+                    ->ceil()
+                    ->getValue();
+            }, 1],
+            ['floor', function ($number) {
+                return (new BigNumber($number))
+                    ->floor()
+                    ->getValue();
+            }, 1],
+            ['powmod', function ($number, $pow, $mod) {
+                return (new BigNumber($number))
+                    ->powMod($pow, $mod)
+                    ->getValue();
+            }, 3],
+            ['round', function ($number) {
+                return (new BigNumber($number))
+                    ->round()
+                    ->getValue();
+            }, 1],
+            ['signum', function ($number) {
+                return (new BigNumber($number))
+                    ->signum();
+            }, 1],
+            ['sqrt', function ($number) {
+                return (new BigNumber($number))
+                    ->sqrt()
+                    ->getValue();
+            }, 1],
         ];
     }
 

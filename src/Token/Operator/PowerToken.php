@@ -13,6 +13,7 @@ namespace Fubhy\Math\Token\Operator;
 
 use Fubhy\Math\Token\BaseToken;
 use Fubhy\Math\Token\NumberToken;
+use Moontoast\Math\BigNumber;
 
 /**
  * Token class for the '^' operator.
@@ -49,7 +50,11 @@ class PowerToken extends BaseToken implements OperatorTokenInterface
     public function execute(&$stack) {
         $a = array_pop($stack);
         $b = array_pop($stack);
-        $result = pow($b->getValue(), $a->getValue());
+
+        $result = (new BigNumber($b->getValue()))
+            ->pow($a->getValue())
+            ->getValue();
+
         return new NumberToken($b->getOffset(), $result);
     }
 }

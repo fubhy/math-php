@@ -13,6 +13,7 @@ namespace Fubhy\Math\Token\Operator;
 
 use Fubhy\Math\Token\BaseToken;
 use Fubhy\Math\Token\NumberToken;
+use Moontoast\Math\BigNumber;
 
 /**
  * Token class for the '/' operator.
@@ -52,7 +53,11 @@ class DivisionToken extends BaseToken implements OperatorTokenInterface
     {
         $a = array_pop($stack);
         $b = array_pop($stack);
-        $result = $b->getValue() / $a->getValue();
+
+        $result = (new BigNumber($b->getValue()))
+            ->divide($a->getValue())
+            ->getValue();
+
         return new NumberToken($b->getOffset(), $result);
     }
 }

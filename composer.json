@@ -1,0 +1,44 @@
+{
+    "name": "fubhy/math-php",
+    "description": "A lexer and parser for mathematical expressions.",
+    "keywords": [
+        "math",
+        "parser",
+        "lexer",
+        "calculator"
+    ],
+    "homepage": "https://github.com/fubhy/math-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian Siemssen",
+            "email": "fubhy@fubhy.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.7",
+        "scrutinizer/ocular": "~1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fubhy\\Math\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fubhy\\Math\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

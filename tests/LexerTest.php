@@ -95,6 +95,20 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests that variables identifiers can be correctly retrieved from Lexer after tokenization.
+     *
+     * @covers ::getVariables
+     */
+    public function testVariables()
+    {
+        $expression = '2 + 3 + [VAR1] + [VAR2] * [VAR1]';
+        $this->lexer->tokenize($expression);
+
+        $this->assertEquals(array('VAR1', 'VAR2'), $this->lexer->getVariables());
+
+    }
+
+    /**
      * Data provider for the testTokenize() test case.
      */
     public function tokenizeProvider()

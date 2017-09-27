@@ -61,6 +61,13 @@ class Lexer
     protected $functions = [];
 
     /**
+     * The list of parsed variables.
+     * 
+     * @var array
+     */
+    protected $variables = [];
+
+    /**
      * Registers a function with the lexer.
      *
      * @param string $name
@@ -342,6 +349,9 @@ class Lexer
 
             case 'variable':
                 $variable = substr($value, 1, -1);
+                if (!in_array($variable, $this->variables)) {
+                    $this->variables[] = $variable;
+                }
                 return new VariableToken($offset, $variable);
         }
 
@@ -390,4 +400,15 @@ class Lexer
         $regex = implode('|', $regex);
         return $this->compiledRegex = "/$regex/i";
     }
+
+    /**
+     * Return the parsed variables identifiers.
+     * 
+     * @return array
+     */
+    public function getVariables()
+    {
+        return $this->variables;
+    }
+
 }

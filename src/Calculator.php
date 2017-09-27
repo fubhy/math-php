@@ -34,6 +34,13 @@ class Calculator
     protected $tokenCache = [];
 
     /**
+     * Optional VariableResolverInterface to resolve variables value at runtime
+     *
+     * @var VariableResolverInterface
+     */
+    protected $variableResolver;
+
+    /**
      * Constructs a new Calculator object.
      *
      * @param array $constants
@@ -59,6 +66,7 @@ class Calculator
         foreach ($operators as $operator) {
             $this->lexer->addOperator($operator[0], $operator[1]);
         }
+
     }
 
     /**
@@ -75,7 +83,7 @@ class Calculator
      * @throws \Fubhy\Math\Exception\IncorrectExpressionException
      * @throws \Fubhy\Math\Exception\UnknownVariableException
      */
-    public function calculate($expression, $variables)
+    public function calculate($expression, $variables = array())
     {
         $hash = md5($expression);
         if (!isset($this->tokenCache[$hash])) {
@@ -87,15 +95,24 @@ class Calculator
         foreach ($tokens as $token) {
             if ($token instanceof NumberToken) {
                 array_push($stack, $token);
-            }
-            elseif ($token instanceof VariableToken) {
+            } elseif ($token instanceof VariableToken) {
                 $identifier = $token->getValue();
-                if (!isset($variables[$identifier])) {
-                    throw new UnknownVariableException($token->getOffset(), $identifier);
+
+                if (!isset($variables[$identifier]) && $this->variableResolver) {
+                    $variableValue = $this->variableResolver->resolveVariable($identifier);
+                    if ($variableValue !== null) {
+                        $variables[$identifier] = $variableValue;
+                    }
                 }
+
+                if (!isset($variables[$identifier])) {
+                    throw new UnknownVariableException(
+                      'Could not find value for variable '.$identifier.' at offset '.$token->getOffset()
+                    );
+                }
+
                 array_push($stack, new NumberToken($token->getOffset(), $variables[$identifier]));
-            }
-            elseif ($token instanceof OperatorTokenInterface || $token instanceof FunctionToken) {
+            } elseif ($token instanceof OperatorTokenInterface || $token instanceof FunctionToken) {
                 array_push($stack, $token->execute($stack));
             }
         }
@@ -114,14 +131,15 @@ class Calculator
      * @return array
      *   The default list of operators.
      */
-    public static function getDefaultOperators() {
+    public static function getDefaultOperators()
+    {
         return [
-            ['plus', 'Fubhy\Math\Token\Operator\PlusToken'],
-            ['minus',  'Fubhy\Math\Token\Operator\MinusToken'],
-            ['multiply', 'Fubhy\Math\Token\Operator\MultiplyToken'],
-            ['division', 'Fubhy\Math\Token\Operator\DivisionToken'],
-            ['modulus', 'Fubhy\Math\Token\Operator\ModulusToken'],
-            ['power', 'Fubhy\Math\Token\Operator\PowerToken'],
+          ['plus', 'Fubhy\Math\Token\Operator\PlusToken'],
+          ['minus', 'Fubhy\Math\Token\Operator\MinusToken'],
+          ['multiply', 'Fubhy\Math\Token\Operator\MultiplyToken'],
+          ['division', 'Fubhy\Math\Token\Operator\DivisionToken'],
+          ['modulus', 'Fubhy\Math\Token\Operator\ModulusToken'],
+          ['power', 'Fubhy\Math\Token\Operator\PowerToken'],
         ];
     }
 
@@ -131,42 +149,71 @@ class Calculator
      * @return array
      *   The default list of functions.
      */
-    public static function getDefaultFunctions() {
+    public static function getDefaultFunctions()
+    {
         return [
-            ['abs', function ($number) {
+          [
+            'abs',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->abs()
-                    ->getValue();
-            }, 1],
-            ['ceil', function ($number) {
+                  ->abs()
+                  ->getValue();
+            },
+            1,
+          ],
+          [
+            'ceil',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->ceil()
-                    ->getValue();
-            }, 1],
-            ['floor', function ($number) {
+                  ->ceil()
+                  ->getValue();
+            },
+            1,
+          ],
+          [
+            'floor',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->floor()
-                    ->getValue();
-            }, 1],
-            ['powmod', function ($number, $pow, $mod) {
+                  ->floor()
+                  ->getValue();
+            },
+            1,
+          ],
+          [
+            'powmod',
+            function ($number, $pow, $mod) {
                 return (new BigNumber($number))
-                    ->powMod($pow, $mod)
-                    ->getValue();
-            }, 3],
-            ['round', function ($number) {
+                  ->powMod($pow, $mod)
+                  ->getValue();
+            },
+            3,
+          ],
+          [
+            'round',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->round()
-                    ->getValue();
-            }, 1],
-            ['signum', function ($number) {
+                  ->round()
+                  ->getValue();
+            },
+            1,
+          ],
+          [
+            'signum',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->signum();
-            }, 1],
-            ['sqrt', function ($number) {
+                  ->signum();
+            },
+            1,
+          ],
+          [
+            'sqrt',
+            function ($number) {
                 return (new BigNumber($number))
-                    ->sqrt()
-                    ->getValue();
-            }, 1],
+                  ->sqrt()
+                  ->getValue();
+            },
+            1,
+          ],
         ];
     }
 
@@ -176,10 +223,20 @@ class Calculator
      * @return array
      *   The default list of constants.
      */
-    public static function getDefaultConstants() {
+    public static function getDefaultConstants()
+    {
         return [
-            ['pi', pi()],
-            ['e',  exp(1)],
+          ['pi', pi()],
+          ['e', exp(1)],
         ];
     }
+
+    /**
+     * @param VariableResolverInterface $variableResolver
+     */
+    public function setVariableResolver($variableResolver)
+    {
+        $this->variableResolver = $variableResolver;
+    }
+
 }
